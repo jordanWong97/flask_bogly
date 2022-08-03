@@ -1,0 +1,20 @@
+{% extends 'base.html' %}
+
+
+{% body block %}
+
+<h1>Users</h1>
+<ul>
+  {% for user in users %}
+  <li><a href="/{{ user.id }}">{{ user.first_name }} {{ user.last_name }}</a></li>
+  {% endfor %}
+</ul>
+<h2>Add User</h2>
+<form method="POST">
+  <p>First Name: <input name="first_name"></p>
+  <p>Last Name: <input name="last_name"></p>
+  <p>Image URL: <input name="image_url"></p>
+  <button>Save</button>
+</form>
+
+{% endblock %}
