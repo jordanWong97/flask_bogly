@@ -1,5 +1,6 @@
 {% extends 'base.html' %}
 
+{% title block} Users {% endblock %}
 
 {% body block %}
 
@@ -9,7 +10,9 @@
   <li><a href="/{{ user.id }}">{{ user.first_name }} {{ user.last_name }}</a></li>
   {% endfor %}
 </ul>
-<h2>Add User</h2>
+
+<button action="/users/new">Add User</button>
+
 <form method="POST">
   <p>First Name: <input name="first_name"></p>
   <p>Last Name: <input name="last_name"></p>
