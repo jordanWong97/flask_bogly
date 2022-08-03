@@ -49,3 +49,43 @@ def process_add_form():
     db.session.commit()
 
     return redirect('/users')
+
+@app.get('/users/int:<user_id>')
+def show_user_information(user_id):
+    """ Shows information on given user based on user_id """
+
+    user = User.query.get(user_id)
+
+    return render_template('user_page.html', user = user)
+
+@app.get('/users/int:<user_id>/edit')
+def show_edit_page(user_id):
+    """ Renders template for user edit page for user """
+
+    user = User.query.get(user_id)
+
+    return render_template('edit_user_form.html', user = user)
+
+@app.post('/users/int:<user_id>/edit')
+def process_edit(user_id):
+    """ Processes user profile update and returns to /users page """
+
+    user = User.query.get(user_id)
+
+    user.first_name = request.form['first_name']
+    user.last_name = request.form['last_name']
+    image_url = request.form['image_url']
+    user.image_url = image_url if image_url else None
+
+    db.session.commit()
+
+    return redirect('/users')
+
+@app.post('/users/int:<user_id>/delete')
+def delete_user(user_id):
+    """ Deletes user """
+
+    user = User.query.get(user_id)
+    user.query.delete()
+
+    return redirect('/users')

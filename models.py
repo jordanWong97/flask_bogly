@@ -8,6 +8,8 @@ def connect_db(app):
     db.app = app
     db.init_app(app)
 
+DEFAULT_IMAGE_URL = None
+
 class User(db.Model):
 
     __tablename__ = 'users'

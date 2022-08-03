@@ -1,4 +1,5 @@
 from unittest import TestCase
+from urllib import response
 
 from app import app, db
 from models import DEFAULT_IMAGE_URL, User
@@ -58,9 +59,49 @@ class UserViewTestCase(TestCase):
         db.session.rollback()
 
     def test_list_users(self):
+        """Checks user page status code, and checks if test_first and test_last
+        are in response html"""
         with self.client as c:
             resp = c.get("/users")
             self.assertEqual(resp.status_code, 200)
             html = resp.get_data(as_text=True)
             self.assertIn("test_first", html)
             self.assertIn("test_last", html)
+
+    def test_process_add_form(self):
+        """ Tests if new user is added into blogly_test db """
+        with self.client as c:
+            resp = c.post('/users/new', data = {'first_name': 'Jor',
+                                                'last_name': 'Wong',
+                                                'image_url': ''})
+            user = User.query.filter_by(first_name = 'Jor')
+            self.assertEqual(resp.status_code, 302)
+            self.assertEqual(user.last_name, 'Wong')
+
+
+    def test_show_add_user_form(self):
+        """ Tests if we reach new user form """
+        with self.client as c:
+            resp = c.get('/users/new')
+            html = resp.get_data(as_text= True)
+
+            self.assertEqual(resp.status_code, 200)
+            self.assertIn('<h1>Add New User</h1>',html)
+
+    def test_show_user_information(self):
+        """ Tests if we reach user page for test_two """
+        with self.client as c:
+            resp = c.get('/users/2')
+            html = resp.get_data(as_text=True)
+
+            self.assertEqual(resp.status_code,200)
+            self.assertIn("test_first_two", html)
+
+    def test_show_edit_page(self):
+        """ Tests edit page for specified user """
+        with self.client as c:
+            resp = c.get('/users/2/edit')
+            html = resp.get_data(as_text=True)
+
+            self.assertEqual(resp.status_code, 200)
+            self.assertIn("test_first_two", html)

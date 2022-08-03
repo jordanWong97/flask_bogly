@@ -1,8 +1,8 @@
 {% extends 'base.html' %}
 
-{% title block} Add User {% endblock %}
+{% block title %} Add User {% endblock %}
 
-{% body block %}
+{% block body %}
 
 <h1>Add New User</h1>
 
@@ -12,3 +12,5 @@
     <p>Image URL: <input name="image_url"></p>
     <button>Add</button>
 </form>
+
+{% endblock %}
