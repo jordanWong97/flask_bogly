@@ -7,14 +7,18 @@
 <h1>Edit User</h1>
 
 <form method="POST" action="/users/{{user.id}}/edit">
-  <p>First Name: <input name="first_name" placeholder="{{user.first_name}}"></p>
-  <p>Last Name: <input name="last_name" placeholder="{{user.last_name}}"></p>
-  <p>Image URL: <input name="image_url" placeholder="{{user.image_url}}"></p>
+  <p>First Name: <input name="first_name" value="{{user.first_name}}"></p>
+  <p>Last Name: <input name="last_name" value="{{user.last_name}}"></p>
+  <p>Image URL: <input name="image_url" value="{{user.image_url}}"></p>
   <button>Save</button>
 </form>
+<!-- don't want placeholder! put it in value instead-->
 
 <form method="GET" action="/users/{{user.id}}">
 <button>Cancel</button>
 </form>
+
+<!-- instead can just do a "link button" that takes it back to link
+(automatically makes a get request) -->
 
 {% endblock %}

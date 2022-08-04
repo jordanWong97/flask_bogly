@@ -10,12 +10,11 @@ User Information
 <img src="{{user.image_url}}" alt="">
 <h2>{{user.first_name}} {{user.last_name}}</h2>
 
-<form method="GET" action="/users/{{user.id}}/edit">
-<button>Edit</button>
+<form>
+    <button formaction="/users/{{user.id}}/edit" formmethod="GET">Edit</button>
+    <button formaction="/users/{{user.id}}/delete" formmethod="POST">Delete</button>
 </form>
 
-<form method="POST" action="/users/{{user.id}}/delete">
-<button>Delete</button>
-</form>
+<!-- formaction and formmethod make it easier instead of making 2 separate forms.. must still be in a form though-->
 
 {% endblock %}
