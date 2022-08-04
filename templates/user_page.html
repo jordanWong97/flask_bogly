@@ -15,6 +15,17 @@ User Information
     <button formaction="/users/{{user.id}}/delete" formmethod="POST">Delete</button>
 </form>
 
+<h3>Posts</h3>
+<ul>
+    {% for post in user.posts %}
+    <li><a href="/posts/{{ post.id }}">{{ post.title }}</a></li>
+    {% endfor %}
+</ul>
+
+<form>
+    <button formmethod="GET" formaction="/users/{{user.id}}/posts/new">Add Post</button>
+</form>
+
 <!-- formaction and formmethod make it easier instead of making 2 separate forms.. must still be in a form though-->
 
 {% endblock %}

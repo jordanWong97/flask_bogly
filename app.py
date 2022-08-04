@@ -125,5 +125,36 @@ def show_post(post_id):
 
     return render_template('post.html', post = post)
 
+@app.get('/posts/<int:post_id>/edit')
+def show_edit_form(post_id):
+    """ Show edit form and cancel button """
 
+    post = Post.query.get(post_id)
 
+    return render_template('edit_form.html', post=post)
+
+@app.post('/posts/<int:post_id>/edit')
+def handle_edit_form(post_id):
+    """ Handles editing of post and redirects to post view """
+
+    post = Post.query.get(post_id)
+
+    post.title = request.form['title']
+    post.content = request.form['content']
+
+    db.session.commit()
+
+    return redirect(f'/posts/{post_id}')
+
+@app.post('/posts/<int:post_id>/delete')
+def delete_post(post_id):
+    """ Deletes post from database and redirect to user page """
+
+    post = Post.query.get(post_id)
+    user_id = post.user_id
+
+    Post.query.filter_by(id = post_id).delete()
+
+    db.session.commit()
+
+    return redirect(f'/users/{user_id}')

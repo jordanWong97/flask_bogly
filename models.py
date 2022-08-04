@@ -42,6 +42,6 @@ class Post(db.Model):
                     nullable=False)
     user_id = db.Column(db.Integer,
                    db.ForeignKey('users.id'))
-    author = db.relationship('User',
+    user = db.relationship('User',
                     backref = 'posts')
 
