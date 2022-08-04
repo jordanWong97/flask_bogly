@@ -8,12 +8,12 @@
 
 <p>{{post.content}}</p>
 
-<p>By {{post.author.first_name}} {{post.author.last_name}}</p>
+<p>By {{post.user.first_name}} {{post.user.last_name}}</p>
 
 <form>
-  <a href="/users/{{user.id}}">Cancel</a>
+  <a href="/users/{{post.user.id}}">Cancel</a>
   <button formmethod="GET" formaction="/posts/{{post.id}}/edit">Edit</button>
-  <button formmethod="POST" formaction="/posts/{{post.id}}/delete">Edit</button>
+  <button formmethod="POST" formaction="/posts/{{post.id}}/delete">Delete</button>
 </form>
 
 {% endblock %}

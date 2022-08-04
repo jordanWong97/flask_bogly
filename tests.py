@@ -2,7 +2,7 @@ from unittest import TestCase
 from urllib import response
 
 from app import app, db
-from models import DEFAULT_IMAGE_URL, User
+from models import DEFAULT_IMAGE_URL, User, Post
 
 # Let's configure our app to use a different database for tests
 app.config['SQLALCHEMY_DATABASE_URI'] = "postgresql:///blogly_test"
@@ -45,7 +45,17 @@ class UserViewTestCase(TestCase):
             image_url=None,
         )
 
-        db.session.add_all([test_user, second_user])
+        first_post = Post(
+            title="test_post_one",
+            content="something interesting"
+        )
+
+        second_post = Post(
+            title="test_post_two",
+            content="something more interesting"
+        )
+
+        db.session.add_all([test_user, second_user, first_post, second_post])
         db.session.commit()
 
         # We can hold onto our test_user's id by attaching it to self (which is
@@ -111,3 +121,16 @@ class UserViewTestCase(TestCase):
 
             self.assertEqual(resp.status_code, 200)
             self.assertIn("test_first", html)
+
+    def test_create_post(self):
+        """ Tests edit page for specified user """
+        with self.client as c:
+            resp = c.post('/users/<int:user_id>/posts/new', follow_redirects=True,
+                                        data = {'title': 'hi',
+                                                'content': 'there'})
+            html = resp.get_data(as_text=True)
+
+            post = Post.query.filter_by(title = 'hi').first() # need to do .first() to get actual answer!
+            self.assertEqual(resp.status_code, 200) #follow redirects and check text for 'Wong'
+            # self.assertEqual(user.last_name, 'Wong') instead of looking at db, check html
+            self.assertIn('there', html)

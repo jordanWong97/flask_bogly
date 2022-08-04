@@ -112,7 +112,7 @@ def create_post(user_id):
     content = request.form['content']
 
     post = Post(title = title, content = content, user_id = user_id)
-    db.add(post)
+    db.session.add(post)
     db.session.commit()
 
     return redirect(f'/users/{user_id}')

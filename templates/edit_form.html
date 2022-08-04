@@ -10,7 +10,7 @@
   <p>Title: <input name="title" value="{{post.title}}"></p>
   <p>Content: <input name="content" value="{{post.content}}"></p>
   <a href="/users/{{post.user_id}}">Cancel</a>
-  <button formmethod="POST" formaction="/post/{{post.id}}/edit">Edit</button>
+  <button formmethod="POST" formaction="/posts/{{post.id}}/edit">Edit</button>
 </form>
 
 {% endblock %}
