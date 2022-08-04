@@ -2,7 +2,7 @@
 
 from flask import Flask, request, redirect, render_template
 from flask_debugtoolbar import DebugToolbarExtension
-from models import db, connect_db, User, DEFAULT_IMAGE_URL
+from models import db, connect_db, User, Post,DEFAULT_IMAGE_URL
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql:///blogly'
@@ -92,3 +92,38 @@ def delete_user(user_id):
     db.session.commit()  # DONT FORGET TO COMMIT
 
     return redirect('/users')
+
+
+# part2
+
+@app.get('/users/<int:user_id>/posts/new')
+def show_create_post_form(user_id):
+    """ Renders create post form """
+
+    user = User.query.get(user_id)
+
+    return render_template('create_post_form.html', user = user)
+
+@app.post('/users/<int:user_id>/posts/new')
+def create_post(user_id):
+    """ Process new post """
+
+    title = request.form['title']
+    content = request.form['content']
+
+    post = Post(title = title, content = content, user_id = user_id)
+    db.add(post)
+    db.session.commit()
+
+    return redirect(f'/users/{user_id}')
+
+@app.get('/posts/<int:post_id>')
+def show_post(post_id):
+    """ Display post by id and shows buttons to edit/delete post"""
+
+    post = Post.query.get(post_id)
+
+    return render_template('post.html', post = post)
+
+
+
