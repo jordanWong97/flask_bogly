@@ -12,7 +12,8 @@ app.config['SQLALCHEMY_ECHO'] = True
 app.config['SECRET_KEY'] = "oh-so-secret"
 debug = DebugToolbarExtension(app)
 
-connect_db(app)
+connect_db(app)  # This function needs to be called to be able to connect to db
+                # need to put in the flask app for this to work
 db.create_all()
 
 @app.get('/')
@@ -53,7 +54,7 @@ def process_add_form():
 def show_user_information(user_id):
     """ Shows information on given user based on user_id """
 
-    user = User.query.get(user_id) #use get_or_404 instead
+    user = User.query.get(user_id) #use get_or_404 instead, if no primary key it will return None if you don't do 404
 
     return render_template('user_page.html', user = user)
 
@@ -100,7 +101,7 @@ def delete_user(user_id):
 def show_create_post_form(user_id):
     """ Renders create post form """
 
-    user = User.query.get(user_id)
+    user = User.query.get(user_id)  #instead do .get_or_404
 
     return render_template('create_post_form.html', user = user)
 

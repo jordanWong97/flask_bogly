@@ -29,6 +29,7 @@ class UserViewTestCase(TestCase):
         # As you add more models later in the exercise, you'll want to delete
         # all of their records before each test just as we're doing with the
         # User model below.
+        Post.query.delete()  # NEED TO PUT THIS FIRST! can't have any orphaned children (delete table with foreign key first)
         User.query.delete()
 
         self.client = app.test_client()
@@ -45,17 +46,22 @@ class UserViewTestCase(TestCase):
             image_url=None,
         )
 
+        db.session.add_all([test_user, second_user])  # NEED TO ADD FIRST SO THAT WE COULD REFER TO test_user.id IN LINE 54!!!!!!
+        db.session.commit()  # THIS LINE TOO!
+
         first_post = Post(
             title="test_post_one",
-            content="something interesting"
+            content="something interesting",
+            user_id = test_user.id
         )
 
         second_post = Post(
             title="test_post_two",
-            content="something more interesting"
+            content="something more interesting",
+            user_id = second_user.id
         )
 
-        db.session.add_all([test_user, second_user, first_post, second_post])
+        db.session.add_all([first_post, second_post])
         db.session.commit()
 
         # We can hold onto our test_user's id by attaching it to self (which is
@@ -63,6 +69,7 @@ class UserViewTestCase(TestCase):
         # rely on this user in our tests without needing to know the numeric
         # value of their id, since it will change each time our tests are run.
         self.user_id = test_user.id
+        self.post_id = first_post.id
 
     def tearDown(self):
         """Clean up any fouled transaction."""
@@ -86,7 +93,7 @@ class UserViewTestCase(TestCase):
                                                 'image_url': ''})
             html = resp.get_data(as_text=True)
 
-            user = User.query.filter_by(first_name = 'Jor').first() # need to do .first() to get actual answer!
+            # user = User.query.filter_by(first_name = 'Jor').first() # need to do .first() to get actual answer!
             self.assertEqual(resp.status_code, 200) #follow redirects and check text for 'Wong'
             # self.assertEqual(user.last_name, 'Wong') instead of looking at db, check html
             self.assertIn('Wong', html)
@@ -125,12 +132,46 @@ class UserViewTestCase(TestCase):
     def test_create_post(self):
         """ Tests edit page for specified user """
         with self.client as c:
-            resp = c.post('/users/<int:user_id>/posts/new', follow_redirects=True,
+            resp = c.post(f'/users/{self.user_id}/posts/new', follow_redirects=True,
                                         data = {'title': 'hi',
                                                 'content': 'there'})
             html = resp.get_data(as_text=True)
 
-            post = Post.query.filter_by(title = 'hi').first() # need to do .first() to get actual answer!
-            self.assertEqual(resp.status_code, 200) #follow redirects and check text for 'Wong'
-            # self.assertEqual(user.last_name, 'Wong') instead of looking at db, check html
-            self.assertIn('there', html)
+           # post = Post.query.filter_by(title = 'hi').first()
+            
+            self.assertEqual(resp.status_code, 200)
+            self.assertIn('hi', html)
+
+    def test_show_new_post_form(self):
+        """ Tests to see if post form is shown correctly """
+        with self.client as c:
+            resp = c.get(f'/users/{self.user_id}/posts/new')
+            html = resp.get_data(as_text=True)
+
+            self.assertEqual(resp.status_code, 200)
+            self.assertIn('Title:', html)
+
+    def test_show_edit_form(self):
+        """ Tests to see if edit form is shown correctly """
+        with self.client as c:
+            resp = c.get(f'/posts/{self.post_id}/edit')
+            html = resp.get_data(as_text=True)
+
+            post = Post.query.get(self.post_id) #might be a bit expensive to send a database request
+            #could just test the html form, instead of a specific value
+            #same concept in next test
+
+            self.assertEqual(resp.status_code, 200)
+            self.assertIn(f'{post.title}', html)
+
+    def test_delete_post(self):
+        """ Tests to see that deleting a post works properly """
+        with self.client as c:
+            test_post = Post.query.get(self.post_id)
+            post_title = test_post.title
+            
+            resp = c.post(f'/posts/{self.post_id}/delete', follow_redirects=True)
+            html = resp.get_data(as_text=True)
+
+            self.assertEqual(resp.status_code, 200)
+            self.assertNotIn(post_title, html)
