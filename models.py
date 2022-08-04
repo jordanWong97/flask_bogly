@@ -8,7 +8,7 @@ def connect_db(app):
     db.app = app
     db.init_app(app)
 
-DEFAULT_IMAGE_URL = None
+DEFAULT_IMAGE_URL = 'https://tinyurl.com/2p86tjer'  #put something here instead of NONE
 
 class User(db.Model):
 
@@ -21,5 +21,7 @@ class User(db.Model):
                      nullable=False)
     last_name = db.Column(db.String(50),
                      nullable=False)
-    image_url = db.Column(db.String)
+    image_url = db.Column(db.String,
+                    default = DEFAULT_IMAGE_URL,
+                    nullable=False) 
 

@@ -9,7 +9,13 @@ User Information
 
 <img src="{{user.image_url}}" alt="">
 <h2>{{user.first_name}} {{user.last_name}}</h2>
-<button action="/users/{{user.id}}/edit">Edit</button>
-<button method="POST" action="/users/{{user.id}}/delete">Delete</button>
+
+<form method="GET" action="/users/{{user.id}}/edit">
+<button>Edit</button>
+</form>
+
+<form method="POST" action="/users/{{user.id}}/delete">
+<button>Delete</button>
+</form>
 
 {% endblock %}

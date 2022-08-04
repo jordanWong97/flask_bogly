@@ -71,12 +71,15 @@ class UserViewTestCase(TestCase):
     def test_process_add_form(self):
         """ Tests if new user is added into blogly_test db """
         with self.client as c:
-            resp = c.post('/users/new', data = {'first_name': 'Jor',
+            resp = c.post('/users/new', follow_redirects=True, data = {'first_name': 'Jor',
                                                 'last_name': 'Wong',
                                                 'image_url': ''})
-            user = User.query.filter_by(first_name = 'Jor')
-            self.assertEqual(resp.status_code, 302)
-            self.assertEqual(user.last_name, 'Wong')
+            html = resp.get_data(as_text=True)
+
+            user = User.query.filter_by(first_name = 'Jor').first() # need to do .first() to get actual answer!
+            self.assertEqual(resp.status_code, 200) #follow redirects and check text for 'Wong'
+            # self.assertEqual(user.last_name, 'Wong') instead of looking at db, check html
+            self.assertIn('Wong', html)
 
 
     def test_show_add_user_form(self):
@@ -91,17 +94,20 @@ class UserViewTestCase(TestCase):
     def test_show_user_information(self):
         """ Tests if we reach user page for test_two """
         with self.client as c:
-            resp = c.get('/users/2')
+            # id = User.query.filter_by(first_name = "test_first").first().id
+            # use self.user_id instead because it's already set
+
+            resp = c.get(f'/users/{self.user_id}')
             html = resp.get_data(as_text=True)
 
             self.assertEqual(resp.status_code,200)
-            self.assertIn("test_first_two", html)
+            self.assertIn("test_first", html)
 
     def test_show_edit_page(self):
         """ Tests edit page for specified user """
         with self.client as c:
-            resp = c.get('/users/2/edit')
+            resp = c.get(f'/users/{self.user_id}/edit')
             html = resp.get_data(as_text=True)
 
             self.assertEqual(resp.status_code, 200)
-            self.assertIn("test_first_two", html)
+            self.assertIn("test_first", html)
